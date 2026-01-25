@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 248, 251, 255;
+  --background-end-rgb: 248, 251, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* Notebook Paper Effect */
+.notebook-lines {
+  background-image: linear-gradient(#e2e8f0 1px, transparent 1px);
+  background-size: 100% 2.5rem;
+  line-height: 2.5rem;
+  background-attachment: local;
+}
+
+/* Audio Waveform Animation */
+@keyframes wave {
+  0%, 100% { height: 4px; }
+  50% { height: 16px; }
+}
+.animate-wave {
+  animation: wave 1s ease-in-out infinite;
+}
