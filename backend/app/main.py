@@ -41,8 +41,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://image-narrator-green.vercel.app",
-        "https://image-narrator-git-clean-main-aryanbhekare05-gmailcoms-projects.vercel.app/",
-        "https://image-narrator-jd3hcyh72-aryanbhekare05-gmailcoms-projects.vercel.app/"
+        "https://image-narrator-git-clean-main-aryanbhekare05-gmailcoms-projects.vercel.app",
+        "https://image-narrator-jd3hcyh72-aryanbhekare05-gmailcoms-projects.vercel.app"
 
     ],
     allow_credentials=True,

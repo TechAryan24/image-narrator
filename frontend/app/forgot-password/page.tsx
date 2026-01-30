@@ -1,19 +1,23 @@
 "use client";
 import { useState } from "react";
 
+// ... imports
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(e: any) {
+  // Clean the URL (removes any accidental double slashes)
+  const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://vision-voice-api.onrender.com').replace(/\/$/, "");
+
+  async function handleSubmit(e: React.FormEvent) { // Better typing
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/forgot-password", {
+      const res = await fetch(`${API_BASE_URL}/forgot-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -21,13 +25,19 @@ export default function ForgotPassword() {
         body: JSON.stringify({ email })
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error("Failed to send reset link");
+        // This catches 400, 404, 500 errors from Render
+        throw new Error(data.detail || "Failed to send reset link");
       }
 
       setSent(true);
-    } catch (err) {
-      setError("Something went wrong. Try again.");
+    } catch (err: any) {
+      console.error("Connection Error:", err);
+      setError(err.message === "Failed to fetch" 
+        ? "Backend is asleep or offline. Please wait a minute and try again." 
+        : err.message);
     } finally {
       setLoading(false);
     }
