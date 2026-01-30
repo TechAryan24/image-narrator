@@ -3,6 +3,7 @@ import json
 import io
 import zipfile
 import base64
+import os
 
 from fastapi import Response # type: ignore
 from fastapi import Request
@@ -37,7 +38,13 @@ models.Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://image-narrator-green.vercel.app",
+        "https://image-narrator-git-clean-main-aryanbhekare05-gmailcoms-projects.vercel.app/",
+        "https://image-narrator-jd3hcyh72-aryanbhekare05-gmailcoms-projects.vercel.app/"
+
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
