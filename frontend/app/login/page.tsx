@@ -34,7 +34,7 @@ export default function LoginPage() {
 
       {/* Ambient Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.06),transparent_55%)]" />
-      <div className="absolute bottom-[-20%] right-[-15%] w-[40rem] h-[40rem] bg-indigo-500/10 blur-[160px] rounded-full" />
+      <div className="absolute bottom-[-20%] right-[-15%] w-160 h-160 bg-indigo-500/10 blur-[160px] rounded-full" />
 
       {/* Nav */}
       <nav className="fixed top-0 inset-x-0 px-10 py-6 flex justify-between z-50">
@@ -71,7 +71,7 @@ export default function LoginPage() {
         {/* Card */}
         <div className="rounded-[2.5rem] border border-border/60 bg-card/60 backdrop-blur-xl shadow-2xl p-10 relative overflow-hidden">
 
-          <div className="absolute -top-32 right-[-8rem] w-72 h-72 bg-indigo-500/10 blur-[140px] rounded-full" />
+          <div className="absolute -top-32 -right-32 w-72 h-72 bg-indigo-500/10 blur-[140px] rounded-full" />
 
           <form onSubmit={handleLogin} className="space-y-6">
 
@@ -85,7 +85,7 @@ export default function LoginPage() {
                   required
                   type="email"
                   placeholder="you@example.com"
-                  className="w-full h-14 !pl-16 pr-4 rounded-2xl bg-muted/20 border border-border/60 
+                  className="w-full h-14 pl-16! pr-4 rounded-2xl bg-muted/20 border border-border/60 
                              focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition outline-none"
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -112,7 +112,7 @@ export default function LoginPage() {
                   required
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className="w-full h-14 !pl-16 !pr-16 rounded-2xl bg-muted/20 border border-border/60 
+                  className="w-full h-14 pl-16! pr-16! rounded-2xl bg-muted/20 border border-border/60 
                              focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition outline-none"
                   onChange={(e) => setPassword(e.target.value)}
                 />

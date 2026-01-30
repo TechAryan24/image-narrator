@@ -96,7 +96,7 @@ export default function Dashboard() {
       <div className="ambient-gradient" />
 
       {/* --- Minimalist Dashboard Nav --- */}
-      <nav className="fixed top-0 left-0 right-0 h-16 glass z-[100]">
+      <nav className="fixed top-0 left-0 right-0 h-16 glass z-100">
         <div className="max-w-6xl mx-auto h-full flex justify-between items-center px-6">
           <div
             className="flex items-center gap-3 cursor-pointer group"
@@ -147,7 +147,7 @@ export default function Dashboard() {
               <input
                 type="text"
                 placeholder="Search library..."
-                className="w-full h-8 !pl-10 pr-4 h-10 border-border/60 text-xs font-medium bg-background/50"
+                className="w-full h-8 pl-10! pr-4 border-border/60 text-xs font-medium bg-background/50"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -200,7 +200,7 @@ export default function Dashboard() {
       {/* --- Refined Detail Modal --- */}
       <AnimatePresence>
         {selectedItem && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center px-4 md:px-10">
+          <div className="fixed inset-0 z-200 flex items-center justify-center px-4 md:px-10">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -216,7 +216,7 @@ export default function Dashboard() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: 20 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="relative w-full max-w-5xl max-h-[88vh] overflow-hidden rounded-[2rem] 
+              className="relative w-full max-w-5xl max-h-[88vh] overflow-hidden rounded-4xl 
                    border border-border/50 bg-card/70 backdrop-blur-xl shadow-premium 
                    flex flex-col md:flex-row"
             >
@@ -232,7 +232,7 @@ export default function Dashboard() {
               </button>
 
               {/* Image Section */}
-              <div className="flex-1 min-h-[240px] bg-muted/30 relative overflow-hidden">
+              <div className="flex-1 min-h-60 bg-muted/30 relative overflow-hidden">
                 {selectedItem.image_data ? (
                   <img
                     src={`data:image/jpeg;base64,${selectedItem.image_data}`}
@@ -246,7 +246,7 @@ export default function Dashboard() {
                 )}
 
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
               </div>
 
               {/* Content Section */}
@@ -329,7 +329,7 @@ const HistoryCard = ({
       onClick={onView}
       className="group relative overflow-hidden rounded-[1.8rem] border border-border/50 
              bg-card/60 backdrop-blur-xl shadow-soft hover:shadow-premium 
-             transition-all duration-300 flex flex-col h-[340px] cursor-pointer"
+             transition-all duration-300 flex flex-col h-85 cursor-pointer"
     >
       {/* Image Section */}
       <div className="h-44 w-full relative overflow-hidden bg-muted/30">
@@ -346,7 +346,7 @@ const HistoryCard = ({
         )}
 
         {/* Soft overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-70 pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-70 pointer-events-none" />
 
         {/* Date Tag */}
         <div
