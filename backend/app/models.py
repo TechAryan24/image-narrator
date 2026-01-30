@@ -7,6 +7,7 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
+    name = Column(String)  # New field
     hashed_password = Column(String)
     history = relationship("History", back_populates="owner")
 
@@ -24,3 +25,12 @@ class History(Base):
     
     timestamp = Column(DateTime, default=datetime.utcnow)
     owner = relationship("User", back_populates="history")
+
+class PasswordReset(Base):
+    __tablename__ = "password_resets"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, index=True)
+    token = Column(String, unique=True, index=True)
+    expires_at = Column(DateTime)
+

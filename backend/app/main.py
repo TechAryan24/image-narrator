@@ -5,6 +5,7 @@ import zipfile
 import base64
 
 from fastapi import Response # type: ignore
+from fastapi import Request
 from fastapi import FastAPI, UploadFile, File, Form, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware # type: ignore
 from fastapi.responses import StreamingResponse # type: ignore
@@ -22,6 +23,11 @@ from app.services.audio import text_to_speech
 from app.services.translation import translate_text # <--- IMPORT NEW SERVICE
 from app.services.vision import get_annotated_image # <--- Import this
 from app.services.report import create_pdf_report   # <--- Import this
+
+# Forgot Password 
+from app.services.email import send_reset_email
+from datetime import datetime, timedelta
+import secrets
 
 
 app = FastAPI()
@@ -126,13 +132,18 @@ async def export_results(
 # --- AUTH ROUTES ---
 
 @app.post("/signup")
-def signup(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+def signup(
+    name: str = Form(...), 
+    email: str = Form(...), 
+    password: str = Form(...), 
+    db: Session = Depends(get_db)
+):
     user = db.query(models.User).filter(models.User.email == email).first()
     if user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
     hashed_password = auth.get_password_hash(password)
-    new_user = models.User(email=email, hashed_password=hashed_password)
+    new_user = models.User(name=name, email=email, hashed_password=hashed_password)
     db.add(new_user)
     db.commit()
     return {"msg": "User created successfully"}
@@ -145,6 +156,14 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     
     access_token = auth.create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
+
+@app.get("/users/me")
+def read_users_me(current_user: models.User = Depends(auth.get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "name": current_user.name
+    }
 
 # --- SAVE HISTORY ROUTE ---
 # We will call this from Frontend after a successful analysis
@@ -177,3 +196,92 @@ def get_history(
     db: Session = Depends(get_db)
 ):
     return current_user.history
+
+@app.delete("/history/{history_id}")
+async def delete_history(
+    history_id: int,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    history_item = db.query(models.History).filter(
+        models.History.id == history_id,
+        models.History.user_id == current_user.id
+    ).first()
+    
+    if not history_item:
+        raise HTTPException(status_code=404, detail="History item not found")
+    
+    db.delete(history_item)
+    db.commit()
+    return {"msg": "History item deleted"}
+
+
+# Forgot Password API
+@app.post("/forgot-password")
+async def forgot_password(
+    request: Request,
+    email: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    # Support JSON or Form input
+    if email is None:
+        body = await request.json()
+        email = body.get("email")
+
+    if not email:
+        raise HTTPException(status_code=422, detail="Email is required")
+
+    user = db.query(models.User).filter(models.User.email == email).first()
+
+    # Always return same message (security)
+    if not user:
+        return {"msg": "If email exists, reset link sent"}
+
+    token = secrets.token_urlsafe(32)
+    expiry = datetime.utcnow() + timedelta(minutes=15)
+
+    reset_entry = models.PasswordReset(
+        email=email,
+        token=token,
+        expires_at=expiry
+    )
+
+    db.add(reset_entry)
+    db.commit()
+
+    reset_link = f"http://localhost:3000/reset-password?token={token}"
+    send_reset_email(email, reset_link)
+
+    return {"msg": "Reset link sent"}
+
+
+# Reset Password API
+@app.post("/reset-password")
+async def reset_password(
+    request: Request,
+    token: str = Form(None),
+    new_password: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    # Support JSON or Form input
+    if token is None or new_password is None:
+        body = await request.json()
+        token = body.get("token")
+        new_password = body.get("new_password")
+
+    if not token or not new_password:
+        raise HTTPException(status_code=422, detail="Token and password required")
+
+    reset = db.query(models.PasswordReset).filter_by(token=token).first()
+
+    if not reset or reset.expires_at < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Token expired or invalid")
+
+    user = db.query(models.User).filter_by(email=reset.email).first()
+
+    user.hashed_password = auth.get_password_hash(new_password)
+
+    db.delete(reset)
+    db.commit()
+
+    return {"msg": "Password reset successful"}

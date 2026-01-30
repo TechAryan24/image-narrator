@@ -1,12 +1,13 @@
 import axios from 'axios';
-import { AnalysisResponse } from '@/types';
+import { AnalysisResponse } from '../types';
 
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
 // --- AUTH FUNCTIONS ---
 
-export const signupUser = async (email: string, password: string) => {
+export const signupUser = async (name: string, email: string, password: string) => {
   const formData = new FormData();
+  formData.append('name', name);
   formData.append('email', email);
   formData.append('password', password);
   return axios.post(`${API_BASE_URL}/signup`, formData);
@@ -26,12 +27,25 @@ export const fetchHistory = async (token: string) => {
   });
 };
 
+export const deleteHistory = async (token: string, historyId: number) => {
+  return axios.delete(`${API_BASE_URL}/history/${historyId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
+
+export const fetchUserProfile = async (token: string) => {
+  return axios.get(`${API_BASE_URL}/users/me`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
 // Update this function signature
 export const saveToHistory = async (token: string, description: string, file: File) => {
   const formData = new FormData();
   formData.append('description', description);
   formData.append('file', file); // <--- Sending the actual file now
-  
+
   return axios.post(`${API_BASE_URL}/save-history`, formData, {
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -39,15 +53,15 @@ export const saveToHistory = async (token: string, description: string, file: Fi
 
 // CHANGE 1: Update function signature to accept lang and voice
 export const analyzeImage = async (
-  file: File, 
-  lang: string, 
+  file: File,
+  lang: string,
   voice: string,
   mode: string
 ): Promise<AnalysisResponse> => {
-  
+
   const formData = new FormData();
   formData.append('file', file);
-  
+
   // CHANGE 2: Append the new fields to FormData
   formData.append('lang', lang);
   formData.append('voice', voice);
@@ -66,16 +80,16 @@ export const analyzeImage = async (
   // 2. Extract Objects
   const objHeader = response.headers['x-ai-detected-objects'];
   let detectedObjects: string[] = [];
-  
+
   if (objHeader) {
     try {
       const jsonString = decodeURIComponent(objHeader);
       const parsed = JSON.parse(jsonString);
-      
+
       if (Array.isArray(parsed)) {
         detectedObjects = parsed.map((item: any) => {
           if (typeof item === 'object' && item.object) {
-             return item.object;
+            return item.object;
           }
           return item;
         });
@@ -88,7 +102,7 @@ export const analyzeImage = async (
   return {
     audioBlob: response.data,
     description,
-    detectedObjects 
+    detectedObjects
   };
 };
 

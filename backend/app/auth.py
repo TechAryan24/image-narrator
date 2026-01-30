@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from . import database, models
+import secrets
 
 # --- CONFIGURATION ---
 # In production, put this in your .env file!
@@ -29,6 +30,10 @@ def create_access_token(data: dict):
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+# Generate Secure Reset Token
+def create_reset_token():
+    return secrets.token_urlsafe(32)
 
 # Current User Dependency
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)):
