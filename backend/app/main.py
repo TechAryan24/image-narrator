@@ -249,7 +249,8 @@ async def forgot_password(
     db.add(reset_entry)
     db.commit()
 
-    reset_link = f"http://localhost:3000/reset-password?token={token}"
+    FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+    reset_link = f"{FRONTEND_URL}/reset-password?token={token}"
     send_reset_email(email, reset_link)
 
     return {"msg": "Reset link sent"}
