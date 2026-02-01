@@ -6,7 +6,7 @@ export default function ForgotPassword() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://vision-voice-api.onrender.com';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://vision-voice-api.onrender.com'/*'http://127.0.0.1:8000'*/;
 
   async function handleSubmit(e: any) {
     e.preventDefault();
